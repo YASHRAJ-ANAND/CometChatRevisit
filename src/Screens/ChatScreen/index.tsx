@@ -2,9 +2,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useEffect, useState} from 'react';
-import {View, BackHandler, Text, Platform} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, Text, Platform, LogBox} from 'react-native';
 import ChatHeader from './components/chatHeader';
 import ChatInput from './components/ChatInput';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -18,12 +17,18 @@ import {useConversationList} from '../../cometChat/hooks/useConversationList';
 const ChatScreen = ({route}: any) => {
   const {userId, username, loggedInUserId} = route.params;
   const navigation = useNavigation<any>();
+  const flatlistRef = useRef<any>();
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const {attachChatListeners, removeChatListeners, newMessage} =
     useConversationList();
   let conversationListenerId = `chatlist_${new Date().getTime()}`;
+
+  /* flashList bug */
+  LogBox.ignoreLogs([
+    'scrollTo was called before RecyclerListView was measured, please wait for the mount to finish',
+  ]);
 
   /* new incomming realtime message handler */
   function attachListeners() {
@@ -44,7 +49,6 @@ const ChatScreen = ({route}: any) => {
 
   /* send text message */
   const sendTextMessage = () => {
-    console.log('send');
     setInputValue('');
     let receiverID = userId;
     let messageText = inputValue;
@@ -58,7 +62,7 @@ const ChatScreen = ({route}: any) => {
     if (inputValue.length > 0) {
       CometChat.sendMessage(textMessage).then(
         message => {
-          console.log('Message sent successfully:', message);
+          // console.log('Message sent successfully:', message);
           setMessages((oldArray: any) => [
             ...oldArray,
             message,
@@ -122,6 +126,10 @@ const ChatScreen = ({route}: any) => {
     );
   }, [userId]);
 
+  // useEffect(() => {
+  //   if (flatlistRef.current.renderItem) flatlistRef.current.scrollToEnd();
+  // }, [flatlistRef]);
+
   return (
     <SafeAreaView edges={['right', 'left', 'top']} style={{flex: 1}}>
       <ChatHeader username={username} onBackPress={() => onBackPressed()} />
@@ -134,6 +142,7 @@ const ChatScreen = ({route}: any) => {
         <>
           <View style={{flex: 1}}>
             <FlashList
+              ref={flatlistRef}
               data={messages}
               bounces={false}
               initialScrollIndex={messages.length - 1}
@@ -142,6 +151,7 @@ const ChatScreen = ({route}: any) => {
               ListFooterComponent={() => (
                 <View style={{height: Platform.OS === 'ios' ? 100 : 65}} />
               )}
+              onContentSizeChange={() => flatlistRef.current.scrollToEnd()}
               ListEmptyComponent={() => (
                 <View
                   style={{
