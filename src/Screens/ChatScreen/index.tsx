@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, Platform, LogBox} from 'react-native';
+import {View, Text, Platform, LogBox, StyleSheet} from 'react-native';
 import ChatHeader from './components/chatHeader';
 import ChatInput from './components/ChatInput';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -126,15 +126,11 @@ const ChatScreen = ({route}: any) => {
     );
   }, [userId]);
 
-  // useEffect(() => {
-  //   if (flatlistRef.current.renderItem) flatlistRef.current.scrollToEnd();
-  // }, [flatlistRef]);
-
   return (
     <SafeAreaView edges={['right', 'left', 'top']} style={{flex: 1}}>
       <ChatHeader username={username} onBackPress={() => onBackPressed()} />
       {isLoading && (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={styles.loadingView}>
           <Text>loading....</Text>
         </View>
       )}
@@ -153,25 +149,14 @@ const ChatScreen = ({route}: any) => {
               )}
               onContentSizeChange={() => flatlistRef.current.scrollToEnd()}
               ListEmptyComponent={() => (
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
+                <View style={styles.noMessageView}>
                   <Text>No messages</Text>
                 </View>
               )}
               ItemSeparatorComponent={() => <View style={{height: 10}} />}
             />
           </View>
-          <View
-            style={{
-              height: 'auto',
-              position: 'absolute',
-              bottom: 0,
-              width: '100%',
-            }}>
+          <View style={styles.chatInputView}>
             <ChatInput
               value={inputValue}
               setValue={setInputValue}
@@ -185,3 +170,18 @@ const ChatScreen = ({route}: any) => {
 };
 
 export default ChatScreen;
+
+const styles = StyleSheet.create({
+  loadingView: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  noMessageView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chatInputView: {
+    height: 'auto',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+});

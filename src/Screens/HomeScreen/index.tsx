@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Button, SafeAreaView, Text, View} from 'react-native';
+import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as actions from '../../store/action';
 import {useNavigation} from '@react-navigation/native';
@@ -47,15 +47,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: '100%',
-          justifyContent: 'space-between',
-          paddingHorizontal: 10,
-          marginTop: 5,
-        }}>
+      <View style={styles.homeMainView}>
         <Text style={{fontSize: 15}}>
           Hi{' '}
           <Text style={{color: 'red', fontSize: 24}}>{data?.user?.name}</Text>
@@ -89,3 +81,14 @@ const Home = () => {
 };
 
 export default Home;
+
+const styles = StyleSheet.create({
+  homeMainView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginTop: 5,
+  },
+});
