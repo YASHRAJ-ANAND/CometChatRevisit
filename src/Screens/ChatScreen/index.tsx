@@ -83,6 +83,7 @@ const ChatScreen = ({route}: any) => {
   };
 
   /* send media message */
+  /* messageType : CometChat.MESSAGE_TYPE.IMAGE or CometChat.MESSAGE_TYPE.VIDEO */
   const sendMediaMessage = async (messageType: string) => {
     try {
       const res = await DocumentPicker.pick({
