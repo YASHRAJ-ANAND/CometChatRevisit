@@ -146,7 +146,11 @@ const ChatScreen = ({route}: any) => {
               ListFooterComponent={() => (
                 <View style={{height: Platform.OS === 'ios' ? 100 : 65}} />
               )}
-              onContentSizeChange={() => flatlistRef.current.scrollToEnd()}
+              onContentSizeChange={() =>
+                messages.length > 0
+                  ? flatlistRef.current.scrollToEnd()
+                  : undefined
+              }
               ListEmptyComponent={() => (
                 <View style={styles.noMessageView}>
                   <Text>No messages</Text>
