@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 const ChatInput = (props: any) => {
-  const {value, setValue, onSendPressed} = props;
+  const {value, setValue, onSendPressed, onAttachmentPressed} = props;
   return (
     <SafeAreaView style={styles.inputMainView}>
       <TextInput
@@ -19,6 +19,16 @@ const ChatInput = (props: any) => {
         value={value}
         onChangeText={value => setValue(value)}
       />
+      <Pressable
+        style={styles.itemAttach}
+        onPress={() => onAttachmentPressed()}>
+        <Image
+          style={styles.sendIcon}
+          source={{
+            uri: 'https://cdn-icons-png.flaticon.com/512/8377/8377269.png',
+          }}
+        />
+      </Pressable>
       <Pressable style={styles.sendPress} onPress={() => onSendPressed()}>
         <Image
           style={styles.sendIcon}
@@ -40,7 +50,7 @@ const styles = StyleSheet.create({
   textInputStyle: {
     fontSize: 15,
     padding: 15,
-    width: '85%',
+    width: '78%',
     borderWidth: 2,
     borderColor: 'black',
     borderRadius: 10,
@@ -50,5 +60,6 @@ const styles = StyleSheet.create({
     height: 50,
   },
   sendPress: {padding: 10},
+  itemAttach: {paddingLeft: 10},
   sendIcon: {width: 25, height: 25},
 });
