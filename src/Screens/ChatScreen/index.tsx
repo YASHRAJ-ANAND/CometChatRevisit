@@ -141,7 +141,6 @@ const ChatScreen = ({route}: any) => {
               ref={flatlistRef}
               data={messages}
               bounces={false}
-              initialScrollIndex={messages.length - 1}
               renderItem={({item}: any) => renderMessageCard(item)}
               estimatedItemSize={10}
               ListFooterComponent={() => (
