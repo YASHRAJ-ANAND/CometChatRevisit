@@ -1,15 +1,18 @@
 import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet, Image, Text} from 'react-native';
 
 const ChatMediaCard = (props: any) => {
   const {message} = props;
   return (
     <View style={styles.cardView}>
-      <Image
-        resizeMode="stretch"
-        source={{uri: message}}
-        style={{width: 200, height: 200, borderRadius: 5}}
-      />
+      {message.type === 'image' && (
+        <Image
+          resizeMode="stretch"
+          source={{uri: message.data.url}}
+          style={{width: 200, height: 200, borderRadius: 5}}
+        />
+      )}
+      {message.type === 'video' && <Text>Video Message</Text>}
     </View>
   );
 };

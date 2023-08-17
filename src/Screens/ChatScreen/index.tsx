@@ -83,10 +83,14 @@ const ChatScreen = ({route}: any) => {
   };
 
   /* send media message */
-  const sendMediaMessage = async () => {
+  const sendMediaMessage = async (messageType: string) => {
     try {
       const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.images],
+        type: [
+          messageType === CometChat.MESSAGE_TYPE.IMAGE
+            ? DocumentPicker.types.images
+            : DocumentPicker.types.video,
+        ],
       });
       const file = {
         name: res[0].name,
@@ -99,16 +103,16 @@ const ChatScreen = ({route}: any) => {
       const mediaMessage = new CometChat.MediaMessage(
         receiverId,
         file,
-        CometChat.MESSAGE_TYPE.IMAGE,
+        messageType,
         receiverType,
       );
       setSending(true);
       setFileModalVisible(false);
       mediaMessage.setReceiver(receiverId);
-      mediaMessage.setType(CometChat.MESSAGE_TYPE.IMAGE);
+      mediaMessage.setType(messageType);
       mediaMessage.setData({
         type: receiverType,
-        category: CometChat.MESSAGE_TYPE.IMAGE,
+        category: messageType,
         name: file.name,
         file: file,
         url: file.uri,
@@ -149,9 +153,6 @@ const ChatScreen = ({route}: any) => {
 
   /* render message cards according to user and reciever */
   const renderMessageCard = (messageInfo: any) => {
-    if (messageInfo.type === 'image') {
-      console.log(messageInfo);
-    }
     return (
       <View
         style={{
@@ -163,10 +164,13 @@ const ChatScreen = ({route}: any) => {
               : 'flex-start',
         }}>
         {messageInfo.type === 'image' && !messageInfo.deletedAt && (
-          <ChatMediaCard message={messageInfo.data.url} />
+          <ChatMediaCard message={messageInfo} />
         )}
         {messageInfo.type === 'text' && (
           <ChatCard message={messageInfo.data.text} />
+        )}
+        {messageInfo.type === 'video' && !messageInfo.deletedAt && (
+          <ChatMediaCard message={messageInfo} />
         )}
       </View>
     );
@@ -247,8 +251,12 @@ const ChatScreen = ({route}: any) => {
       <MediaModal
         modalVisible={fileModalVisible}
         setModalVisible={() => setFileModalVisible(false)}
-        onImageUploadPress={() => sendMediaMessage()}
-        onVideoUploadPress={() => {}}
+        onImageUploadPress={() =>
+          sendMediaMessage(CometChat.MESSAGE_TYPE.IMAGE)
+        }
+        onVideoUploadPress={() =>
+          sendMediaMessage(CometChat.MESSAGE_TYPE.VIDEO)
+        }
       />
     </SafeAreaView>
   );
