@@ -18,7 +18,7 @@ import DocumentPicker from 'react-native-document-picker';
 import ChatMediaCard from './components/chatMediaCard';
 
 const ChatScreen = ({route}: any) => {
-  const {userId, username, loggedInUserId} = route.params;
+  const {userId, username, loggedInUserId, type, conversationId} = route.params;
   const navigation = useNavigation<any>();
   const flatlistRef = useRef<any>();
   const [inputValue, setInputValue] = useState('');
@@ -56,9 +56,13 @@ const ChatScreen = ({route}: any) => {
   const sendTextMessage = () => {
     setInputValue('');
     setSending(true);
-    let receiverID = userId;
+    console.log(conversationId);
+    let receiverID = conversationId;
     let messageText = inputValue;
-    let receiverType = CometChat.RECEIVER_TYPE.USER;
+    let receiverType =
+      type === 'user'
+        ? CometChat.RECEIVER_TYPE.USER
+        : CometChat.RECEIVER_TYPE.GROUP;
     let textMessage = new CometChat.TextMessage(
       receiverID,
       messageText,
@@ -99,8 +103,11 @@ const ChatScreen = ({route}: any) => {
         uri: res[0].uri,
       };
 
-      let receiverId = userId;
-      let receiverType = 'user';
+      let receiverId = conversationId;
+      let receiverType =
+        type === 'user'
+          ? CometChat.RECEIVER_TYPE.USER
+          : CometChat.RECEIVER_TYPE.GROUP;
       const mediaMessage = new CometChat.MediaMessage(
         receiverId,
         file,
@@ -173,32 +180,68 @@ const ChatScreen = ({route}: any) => {
         {messageInfo.type === 'video' && !messageInfo.deletedAt && (
           <ChatMediaCard message={messageInfo} />
         )}
+        {messageInfo.type === 'groupMember' && !messageInfo.deletedAt && (
+          <View
+            style={{
+              width: '100%',
+              alignItems: 'center',
+            }}>
+            <Text>{messageInfo.message}</Text>
+          </View>
+        )}
       </View>
     );
+  };
+
+  const markRecievedMessagesRead = (messages: CometChat.BaseMessage[]) => {
+    messages.map(async item => {
+      await CometChat.markAsRead(item);
+    });
   };
 
   /* initial messages call */
   useEffect(() => {
     setIsLoading(true);
     removeListeners(); /* remove any old listeners if active */
-    let UID = userId;
+    let UID = conversationId;
     let limit = 30;
     let messagesRequest = new CometChat.MessagesRequestBuilder()
       .setUID(UID)
       .setLimit(limit)
       .build();
+    let groupMessagesRequest = new CometChat.MessagesRequestBuilder()
+      .setGUID(UID)
+      .setLimit(limit)
+      .build();
 
-    messagesRequest.fetchPrevious().then(
-      messages => {
-        setMessages(messages);
-        attachListeners(); /* activate new message listener for the opened chat */
-        setIsLoading(false);
-      },
-      error => {
-        console.log('Message fetching failed with error:', error);
-        setIsLoading(false);
-      },
-    );
+    if (type === 'user') {
+      messagesRequest.fetchPrevious().then(
+        messages => {
+          markRecievedMessagesRead(messages);
+          setMessages(messages);
+          attachListeners(); /* activate new message listener for the opened chat */
+          setIsLoading(false);
+        },
+        error => {
+          console.log('Message fetching failed with error:', error);
+          setIsLoading(false);
+        },
+      );
+    } else {
+      groupMessagesRequest.fetchPrevious().then(
+        messages => {
+          markRecievedMessagesRead(messages);
+          console.log(messages);
+          setMessages(messages);
+          attachListeners(); /* activate new message listener for the opened chat */
+          setIsLoading(false);
+        },
+        error => {
+          console.log('Message fetching failed with error:', error);
+          setIsLoading(false);
+        },
+      );
+    }
   }, [userId]);
 
   return (
