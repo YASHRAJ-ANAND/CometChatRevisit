@@ -19,7 +19,7 @@ const UserCard = (props: iUserCard) => {
         padding: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: selected ? '#FF5733' : 'white',
+        backgroundColor: selected ? '#85F6FF' : 'white',
         borderColor: 'black',
         borderWidth: 2,
         borderRadius: 5,

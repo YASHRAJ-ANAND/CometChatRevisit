@@ -25,6 +25,7 @@ const ChatScreen = ({route}: any) => {
   const [messages, setMessages] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [membersCount, setMembersCount] = useState('...');
   const {attachChatListeners, removeChatListeners, newMessage} =
     useConversationList();
   let conversationListenerId = `chatlist_${new Date().getTime()}`;
@@ -229,10 +230,11 @@ const ChatScreen = ({route}: any) => {
       );
     } else {
       groupMessagesRequest.fetchPrevious().then(
-        messages => {
+        (messages: any) => {
           markRecievedMessagesRead(messages);
           console.log(messages);
           setMessages(messages);
+          setMembersCount(messages[messages.length - 1].receiver.membersCount);
           attachListeners(); /* activate new message listener for the opened chat */
           setIsLoading(false);
         },
@@ -246,7 +248,12 @@ const ChatScreen = ({route}: any) => {
 
   return (
     <SafeAreaView edges={['right', 'left', 'top']} style={{flex: 1}}>
-      <ChatHeader username={username} onBackPress={() => onBackPressed()} />
+      <ChatHeader
+        username={username}
+        onBackPress={() => onBackPressed()}
+        onHeaderPress={() => console.log('32423423')}
+        members={type === 'user' ? undefined : membersCount}
+      />
       {isLoading && (
         <View style={styles.loadingView}>
           <Text>loading....</Text>

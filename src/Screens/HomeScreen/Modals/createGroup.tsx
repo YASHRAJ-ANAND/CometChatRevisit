@@ -79,10 +79,18 @@ const CreateGroup = (props: any) => {
           marginTop: 50,
           backgroundColor: 'white',
         }}>
-        <Pressable onPress={() => closeModal()}>
-          <Text>Hide Modal</Text>
-        </Pressable>
-        <Text style={{fontSize: 20, margin: 5}}>Group Name</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            margin: 5,
+          }}>
+          <Text style={{fontSize: 20}}>Group Name</Text>
+          <Pressable style={{marginRight: 10}} onPress={() => closeModal()}>
+            <Text>close</Text>
+          </Pressable>
+        </View>
         <TextInput
           style={{
             height: 50,
@@ -90,7 +98,8 @@ const CreateGroup = (props: any) => {
             borderRadius: 10,
             paddingHorizontal: 10,
             fontSize: 25,
-            backgroundColor: '#ADD8E6',
+            backgroundColor: '#D8D8D8',
+            color: 'black',
           }}
           value={groupName}
           onChangeText={value => setGroupName(value)}
@@ -119,13 +128,15 @@ const CreateGroup = (props: any) => {
         <TouchableOpacity onPress={() => createGroup()}>
           <View
             style={{
-              width: '100%',
               height: 60,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: 'white',
+              borderColor: 'red',
+              borderWidth: 2,
+              margin: 10,
+              borderRadius: 10,
             }}>
-            <Text>Create Group</Text>
+            <Text style={{fontSize: 20}}>Create Group</Text>
           </View>
         </TouchableOpacity>
       </SafeAreaView>
